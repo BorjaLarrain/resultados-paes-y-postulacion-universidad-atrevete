@@ -28,6 +28,7 @@ def fetch_students_data():
     """
     Obtiene todos los datos de estudiantes con sus resultados PAES y postulaciones.
     Incluye el año más reciente asociado a los cursos de cada alumno.
+    Solo incluye alumnos que están en cuarto medio (tienen al menos un curso de IV Medio).
     
     Returns:
         pandas.DataFrame: DataFrame con todos los datos de estudiantes
@@ -37,6 +38,7 @@ def fetch_students_data():
             u.id AS user_id,
             u."lastName" || ' ' || u."name" AS full_name,
             u."phone" AS phone_number,
+            u."email" AS email,
             MAX(s."name") AS school_name,
             MAX(g."name") AS grade_name,
             MAX(y."name") AS year_name,
@@ -70,7 +72,16 @@ def fetch_students_data():
         LEFT JOIN "Establishments" e ON r."EstablishmentId" = e.id
         LEFT JOIN "Careers" c ON r."CareerId" = c.id
         WHERE uc."role" = 'student'
-        GROUP BY u.id, u."lastName", u."name", u."phone"
+            AND u.id IN (
+                -- Subconsulta: alumnos que tienen al menos un curso de IV Medio
+                SELECT DISTINCT uc3."UserId"
+                FROM "UserCourses" uc3
+                JOIN "Courses" co3 ON uc3."CourseId" = co3.id
+                JOIN "Grades" g3 ON co3."GradeId" = g3.id
+                WHERE uc3."role" = 'student'
+                    AND g3."name" = 'IV'
+            )
+        GROUP BY u.id, u."lastName", u."name", u."phone", u."email"
     """
     
     conn = None

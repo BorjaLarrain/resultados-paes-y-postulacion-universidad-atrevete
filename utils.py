@@ -30,6 +30,7 @@ def format_table(df: pd.DataFrame) -> pd.DataFrame:
     column_mapping = {
         'full_name': 'Nombre Completo',
         'phone_number': 'Teléfono',
+        'email': 'Email',
         'school_name': 'Colegio',
         'grade_name': 'Grado',
         'year_name': 'Año',

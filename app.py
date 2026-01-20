@@ -39,10 +39,10 @@ with st.sidebar:
     
     # Filtro por año
     years = sorted(df['year_name'].dropna().unique().tolist(), reverse=True)
-    selected_years = st.multiselect(
+    selected_year = st.selectbox(
         "Año",
         options=years,
-        default=years if years else []
+        index=0 if years else None
     )
     
     # Filtro por colegio
@@ -55,11 +55,6 @@ with st.sidebar:
     
     # Checkbox para mostrar solo con resultados (solo para Vista General)
     show_only_with_results = st.checkbox("Mostrar solo alumnos con resultados completos", value=False)
-    
-    # Botón para limpiar filtros
-    if st.button("Limpiar Filtros"):
-        st.session_state.clear()
-        st.rerun()
 
 # Crear pestañas
 tab1, tab2 = st.tabs(["📋 Vista General", "📈 Estadísticas"])
@@ -71,8 +66,8 @@ with tab1:
     # Aplicar filtros
     df_filtered = df.copy()
     
-    if selected_years:
-        df_filtered = df_filtered[df_filtered['year_name'].isin(selected_years)]
+    if selected_year:
+        df_filtered = df_filtered[df_filtered['year_name'] == selected_year]
     
     if selected_schools:
         df_filtered = df_filtered[df_filtered['school_name'].isin(selected_schools)]
@@ -120,30 +115,13 @@ with tab1:
                 hide_index=True
             )
     
-    # Desglose por año si hay filtro de año activo
-    if selected_years and len(selected_years) > 1:
-        st.subheader("📊 Desglose por Año")
-        year_stats = get_response_stats(df_filtered, group_by='year_name')
-        if isinstance(year_stats, list):
-            year_df = pd.DataFrame(year_stats)
-            st.dataframe(
-                year_df[['year_name', 'total', 'with_results', 'without_results', 'percentage']],
-                column_config={
-                    'year_name': 'Año',
-                    'total': 'Total',
-                    'with_results': 'Con Resultados',
-                    'without_results': 'Sin Resultados',
-                    'percentage': st.column_config.NumberColumn('Porcentaje', format="%.1f%%")
-                },
-                hide_index=True
-            )
     
     # Tabla de datos
     st.subheader("📋 Datos de Alumnos")
     
     # Seleccionar columnas para mostrar
     display_columns = [
-        'full_name', 'phone_number', 'school_name', 'grade_name', 'year_name',
+        'full_name', 'phone_number', 'email', 'school_name', 'grade_name', 'year_name',
         'nem', 'ranking', 'm1', 'm2', 'language', 'history', 'science', 'scienceMention',
         'establishment_name', 'career_name'
     ]
@@ -177,8 +155,8 @@ with tab2:
     # Aplicar filtros (usando los filtros compartidos del sidebar)
     df_filtered_stats = df.copy()
     
-    if selected_years:
-        df_filtered_stats = df_filtered_stats[df_filtered_stats['year_name'].isin(selected_years)]
+    if selected_year:
+        df_filtered_stats = df_filtered_stats[df_filtered_stats['year_name'] == selected_year]
     
     if selected_schools:
         df_filtered_stats = df_filtered_stats[df_filtered_stats['school_name'].isin(selected_schools)]
