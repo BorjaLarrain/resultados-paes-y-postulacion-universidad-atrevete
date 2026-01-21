@@ -16,7 +16,7 @@ def format_table(df: pd.DataFrame) -> pd.DataFrame:
     df_formatted = df.copy()
     
     # Formatear números decimales a 2 decimales
-    numeric_columns = ['nem', 'ranking', 'm1', 'm2', 'language', 'history', 'science', 'scienceMention']
+    numeric_columns = ['nem', 'ranking', 'm1', 'm2', 'language', 'history', 'science']
     for col in numeric_columns:
         if col in df_formatted.columns:
             # Convertir a numérico primero, manejar errores
@@ -104,7 +104,7 @@ def calculate_statistics(df: pd.DataFrame) -> Dict:
     if len(df_with_results) == 0:
         return {}
     
-    metrics = ['nem', 'ranking', 'm1', 'm2', 'language', 'history', 'science', 'scienceMention']
+    metrics = ['nem', 'ranking', 'm1', 'm2', 'language', 'history', 'science']
     stats = {}
     
     for metric in metrics:

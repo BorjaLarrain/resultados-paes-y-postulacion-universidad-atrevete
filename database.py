@@ -17,7 +17,8 @@ def get_db_connection():
             database=DB_NAME,
             user=DB_USER,
             password=DB_PASSWORD,
-            port=DB_PORT
+            port=DB_PORT,
+            client_encoding='UTF8'
         )
         return conn
     except psycopg2.Error as e:
@@ -51,7 +52,7 @@ def fetch_students_data():
             MAX(r."language") AS language, 
             MAX(r."history") AS history, 
             MAX(r."science") AS science, 
-            MAX(r."scienceMention") AS "scienceMention",
+            MAX(CASE WHEN r."scienceMention" IS NOT NULL AND r."scienceMention" != '' THEN r."scienceMention" END) AS "scienceMention",
             CASE WHEN MAX(r."id") IS NOT NULL THEN TRUE ELSE FALSE END AS has_results
         FROM "Users" u
         JOIN "UserCourses" uc ON u.id = uc."UserId"
@@ -88,6 +89,8 @@ def fetch_students_data():
     try:
         conn = get_db_connection()
         df = pd.read_sql_query(query, conn)
+        # Normalizar nombres de columnas: eliminar comillas dobles si están presentes
+        df.columns = df.columns.str.strip('"')
         return df
     except Exception as e:
         raise Exception(f"Error al obtener datos de estudiantes: {e}")

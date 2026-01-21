@@ -182,8 +182,7 @@ with tab2:
                 'm2': 'M2',
                 'language': 'Lenguaje',
                 'history': 'Historia',
-                'science': 'Ciencias',
-                'scienceMention': 'Mención Ciencias'
+                'science': 'Ciencias'
             }
             
             for metric_key, metric_label in metric_names.items():
